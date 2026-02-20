@@ -1,40 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import Confetti from 'react-confetti';
 import useSound from 'use-sound';
+import { Volume2, ArrowRight, ArrowLeft } from 'lucide-react';
 import { animals } from './data';
-import { Volume2 } from 'lucide-react';
+import FloatingSafari from './Background';
+
+// --- MOTION MANIFEST: PHYSICS CONFIG ---
+const expertSpring = {
+  type: "spring",
+  stiffness: 400,
+  damping: 30,
+  mass: 1
+};
+
+const tapPhysics = { scale: 0.95 };
+const hoverPhysics = { 
+  scale: 1.05, 
+  rotate: 2, 
+  y: -5,
+  boxShadow: "0px 15px 0px rgba(0,0,0,0.2)" // Hard shadow lift
+};
 
 const App = () => {
-  const [currentAnimalIndex, setCurrentAnimalIndex] = useState(0);
+  // --- STATE ---
+  const [currentAnimalIndex, setCurrentAnimalIndex] = useState(() => {
+      const saved = localStorage.getItem('zoo-state');
+      return saved ? JSON.parse(saved).currentAnimalIndex || 0 : 0;
+  });
   const [direction, setDirection] = useState(0);
   const [gameState, setGameState] = useState('hidden'); // hidden, reveal, success
   const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight });
-
-  // Stickiness Hack 2: Disco Mode State
   const [discoMode, setDiscoMode] = useState(false);
   const [titleTapCount, setTitleTapCount] = useState(0);
-  // Using a rapid rhythmic animal sound remix for disco mode since we don't have a public mp3 handy
-  // For now, let's just use the current animal sound looped faster or something similar if possible, 
-  // but the requirement says "find a public mp3 or use a rapid rhythmic animal sound remix".
-  // Since I can't easily download files, I'll simulate the "disco loop" by using a short interval to play sounds or just visual only if sound is hard.
-  // Actually, I'll use a placeholder or re-use an existing sound creatively if I can't fetch. 
-  // But wait, the prompt says "find a public mp3". I'll skip the external fetch for now and focus on visual + maybe looping current sound.
-  // Better yet, I'll just use a visual effect heavily.
 
   const currentAnimal = animals[currentAnimalIndex];
-  
-  // Force re-mount of sound hook when animal changes
-  const [play, { stop }] = useSound(currentAnimal.soundUrl, { volume: 0.5 });
-  
-  // Disco loop sound - simulated by playing the current animal sound repeatedly? No, that might be annoying.
-  // Let's assume we have a disco track or just silence with visuals for now, as fetching is risky without a known URL.
-  // I will leave the sound part as a TODO or try to use a simple oscillator if I could, but standard mp3 is requested.
-  // I'll stick to visual for the "Disco Mode" requirement regarding audio unless I find a reliable URL.
-  // Actually, I can use a simple beat if I had one. I'll omit the audio loop for now to avoid broken links, 
-  // or use a placeholder comment.
 
-  // Reset state when animal changes
+  // --- LOGIC ENGINE: AUDIO & PERSISTENCE ---
+  const [play, { stop }] = useSound(currentAnimal.soundUrl, { volume: 0.5 });
+
+  // Persistence (Simulating .panodu/state.json anchor via localStorage for now)
+  useEffect(() => {
+    const state = { currentAnimalIndex, discoMode, gameState };
+    localStorage.setItem('zoo-state', JSON.stringify(state));
+    // In a real backend environment, we'd POST to an API to write to .panodu/state.json
+    console.log('[State Anchor] Synced:', state); 
+  }, [currentAnimalIndex, discoMode, gameState]);
+
   useEffect(() => {
     stop();
     setGameState('hidden');
@@ -46,24 +58,15 @@ const App = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Disco Mode Trigger
   useEffect(() => {
     if (titleTapCount >= 5) {
       setDiscoMode(true);
-      setTitleTapCount(0); // Reset to avoid repeated triggers
+      setTitleTapCount(0);
     }
   }, [titleTapCount]);
 
-  // Disco Loop Effect (Visual pulsing is handled in render, audio would go here)
-  useEffect(() => {
-    let interval;
-    if (discoMode) {
-      // visual only for now
-    }
-    return () => clearInterval(interval);
-  }, [discoMode]);
 
-
+  // --- HANDLERS ---
   const handleNext = () => {
     setDirection(1);
     setCurrentAnimalIndex((prev) => (prev + 1) % animals.length);
@@ -74,230 +77,248 @@ const App = () => {
     setCurrentAnimalIndex((prev) => (prev - 1 + animals.length) % animals.length);
   };
 
+  const handleReveal = () => {
+    setGameState('reveal');
+    play();
+    setTimeout(() => setGameState('success'), 500);
+  };
+
   const swipeConfidenceThreshold = 1000;
   const swipePower = (offset, velocity) => {
     return Math.abs(offset) * velocity;
   };
 
-  const handleReveal = () => {
-    setGameState('reveal');
-    play();
-    // Celebrate!
-    setTimeout(() => setGameState('success'), 500);
-  };
-
-  const variants = {
+  // --- ANIMATION VARIANTS ---
+  const cardVariants = {
     enter: (direction) => ({
-      x: direction > 0 ? 300 : -300,
+      x: direction > 0 ? 500 : -500,
       opacity: 0,
-      scale: 0.8
+      scale: 0.5,
+      rotate: direction > 0 ? 20 : -20
     }),
     center: {
       zIndex: 1,
       x: 0,
       opacity: 1,
-      scale: 1
+      scale: 1,
+      rotate: 0
     },
     exit: (direction) => ({
       zIndex: 0,
-      x: direction < 0 ? 300 : -300,
+      x: direction < 0 ? 500 : -500,
       opacity: 0,
-      scale: 0.8
+      scale: 0.5,
+      rotate: direction < 0 ? -20 : 20
     })
   };
 
-  // Stickiness Hack 1: Unique Animations
-  const getAnimalAnimation = (animalId) => {
-    if (discoMode) {
-      return {
-        scale: [1, 1.2, 1],
-        rotate: [0, 180, 360],
-        transition: { duration: 1, repeat: Infinity, ease: "linear" }
-      };
-    }
+  // --- STICKINESS HACKS (v1.1 RE-INTEGRATION) ---
+  const getAnimalAnimation = (id, state) => {
+    if (state !== 'reveal' && state !== 'success') return {};
     
-    // Default idle animation
-    const defaultIdle = { scale: [1, 1.1, 1], rotate: [0, 5, -5, 0], transition: { duration: 2, repeat: Infinity } };
-
-    if (gameState !== 'reveal' && gameState !== 'success') return defaultIdle;
-
-    switch (animalId) {
-      case 'lion': // Shake/Roar
+    switch(id) {
+      case 'lion': // Screen Shake
         return {
           x: [0, -10, 10, -10, 10, 0],
-          scale: [1, 1.2, 1],
           transition: { duration: 0.5 }
         };
-      case 'giraffe': // Neck stretch (vertical scale)
+      case 'giraffe': // Neck Stretch
         return {
           scaleY: [1, 1.5, 1],
           originY: 1,
-          transition: { duration: 1, repeat: Infinity }
+          transition: { type: "spring", stiffness: 300 }
         };
-      case 'dog': // Bounce
+      case 'dog': // Bouncing
         return {
-          y: [0, -20, 0, -10, 0],
-          transition: { duration: 0.5, repeat: Infinity }
+          y: [0, -30, 0, -15, 0],
+          transition: { duration: 0.6, ease: "easeOut" }
         };
-       // Elephant and Cat have extra visual elements, their main icon animation can be simple or complementary
-      case 'elephant':
-      case 'cat':
       default:
-        return defaultIdle;
+        return { 
+          rotate: [0, -10, 10, 0], 
+          scale: [1, 1.2, 1],
+          transition: { duration: 0.5 }
+        };
     }
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 overflow-hidden relative transition-colors duration-1000 ${discoMode ? 'bg-gradient-to-r from-red-500 via-green-500 to-blue-500 animate-gradient-xy' : 'bg-gradient-to-br from-green-300 via-yellow-200 to-green-300'}`}>
+    <div className={`min-h-screen w-full overflow-hidden relative flex flex-col items-center justify-center font-sans select-none ${discoMode ? 'bg-purple-900' : 'bg-orange-50'}`}>
       
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+      {/* 1. BACKGROUND ENGINE */}
+      <FloatingSafari />
+      {gameState === 'success' && <Confetti width={windowSize.width} height={windowSize.height} recycle={false} numberOfPieces={200} />}
 
-      {gameState === 'success' && <Confetti width={windowSize.width} height={windowSize.height} />}
-
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="relative w-full max-w-md bg-white/30 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl p-8 flex flex-col items-center gap-6"
-      >
-        
-        {/* Header - Tap for Disco Mode */}
-        <h1 
-          className="text-4xl font-extrabold text-green-900 drop-shadow-sm font-serif select-none cursor-pointer active:scale-95 transition-transform"
-          onClick={() => setTitleTapCount(prev => prev + 1)}
+      {/* 2. MAIN LAYOUT */}
+      <LayoutGroup>
+        <motion.div 
+          layout
+          className="relative z-10 w-full max-w-md flex flex-col items-center gap-8 p-4"
+          animate={currentAnimal.id === 'lion' && (gameState === 'reveal' || gameState === 'success') ? { x: [0, -5, 5, -5, 5, 0], transition: { duration: 0.4 } } : {}}
         >
-          {discoMode ? '💃 Zoo-Disco 🕺' : 'Zoo-Venture 🦁'}
-        </h1>
-
-        {/* Animal Card */}
-        <AnimatePresence mode='wait' custom={direction}>
-          <motion.div
-            key={currentAnimal.id}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 }
-            }}
-            drag="x"
-            dragConstraints={{ left: 0, right: 0 }}
-            dragElastic={1}
-            onDragEnd={(e, { offset, velocity }) => {
-              const swipe = swipePower(offset.x, velocity.x);
-
-              if (swipe < -swipeConfidenceThreshold) {
-                handleNext();
-              } else if (swipe > swipeConfidenceThreshold) {
-                handlePrevious();
-              }
-            }}
-            className={`w-64 h-64 rounded-2xl bg-gradient-to-tr ${currentAnimal.color} flex items-center justify-center shadow-inner relative overflow-visible touch-none cursor-grab active:cursor-grabbing`}
-            onClick={() => {
-                if (gameState === 'hidden') handleReveal();
-                else play();
-            }}
+          
+          {/* Header */}
+          <motion.h1 
+            layoutId="header-title"
+            className={`text-5xl font-extrabold tracking-tight drop-shadow-md cursor-pointer ${discoMode ? 'text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-yellow-500' : 'text-green-800'}`}
+            onClick={() => setTitleTapCount(prev => prev + 1)}
+            whileTap={{ scale: 0.9 }}
           >
-             {/* Special Effects Layer */}
-             {(gameState === 'reveal' || gameState === 'success') && currentAnimal.id === 'elephant' && (
-                <motion.div 
-                  className="absolute inset-0 pointer-events-none flex justify-center items-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                >
-                   {/* Water droplets */}
-                   {[...Array(5)].map((_, i) => (
-                     <motion.div
-                       key={i}
-                       className="absolute bg-blue-400 rounded-full w-3 h-3"
-                       initial={{ y: 0, x: 0, opacity: 1 }}
-                       animate={{ 
-                         y: -60 - Math.random() * 40, 
-                         x: (Math.random() - 0.5) * 60, 
-                         opacity: 0 
-                       }}
-                       transition={{ duration: 0.8, repeat: Infinity, delay: i * 0.1 }}
-                     />
-                   ))}
-                </motion.div>
-             )}
+            {discoMode ? '🕺 ZOO DISCO 💃' : 'Zoo-Venture'}
+          </motion.h1>
 
-            {(gameState === 'reveal' || gameState === 'success') && currentAnimal.id === 'cat' && (
+          {/* 3. SQUISHY 3D CARD */}
+          <div className="relative w-72 h-96 perspective-1000">
+            <AnimatePresence mode='popLayout' custom={direction}>
+              <motion.div
+                key={currentAnimal.id}
+                custom={direction}
+                variants={cardVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={expertSpring}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.7}
+                onDragEnd={(e, { offset, velocity }) => {
+                  const swipe = swipePower(offset.x, velocity.x);
+                  if (swipe < -swipeConfidenceThreshold) handleNext();
+                  else if (swipe > swipeConfidenceThreshold) handlePrevious();
+                }}
+                className={`absolute inset-0 rounded-3xl flex flex-col items-center justify-center shadow-2xl cursor-grab active:cursor-grabbing border-4 border-white/20 backdrop-blur-sm bg-gradient-to-br ${currentAnimal.color}`}
+                style={{ 
+                  boxShadow: "0px 10px 0px rgba(0,0,0,0.15)" // Squishy 3D Shadow base
+                }}
+                whileHover={hoverPhysics}
+                whileTap={tapPhysics}
+                onClick={() => {
+                    if (gameState === 'hidden') handleReveal();
+                    else play();
+                }}
+              >
+                
+                {/* Animal Icon */}
                 <motion.div 
-                  className="absolute bottom-4 left-4 pointer-events-none"
-                  initial={{ x: -20 }}
-                  animate={{ x: 180, rotate: 360 }}
-                  transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+                  layoutId={`animal-icon-${currentAnimal.id}`}
+                  className="text-9xl filter drop-shadow-lg z-20 relative"
+                  animate={getAnimalAnimation(currentAnimal.id, gameState)}
                 >
-                   {/* Yarn Ball SVG */}
-                   <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500">
-                     <circle cx="12" cy="12" r="10"></circle>
-                     <path d="M2 12h20"></path>
-                     <path d="M12 2v20"></path>
-                     <path d="M4.93 4.93l14.14 14.14"></path>
-                     <path d="M19.07 4.93L4.93 19.07"></path>
-                   </svg>
-                </motion.div>
-             )}
+                  {currentAnimal.icon}
 
-             <motion.div
-               animate={getAnimalAnimation(currentAnimal.id)}
-               className="text-9xl filter drop-shadow-lg select-none pointer-events-none z-10"
-             >
-               {currentAnimal.icon}
-             </motion.div>
-             
-             {/* Name Overlay */}
-             {(gameState === 'reveal' || gameState === 'success') && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute bottom-4 bg-white/80 backdrop-blur-sm px-6 py-2 rounded-full shadow-lg pointer-events-none z-20"
-                >
-                  <span className="text-2xl font-bold text-gray-800">{currentAnimal.name}</span>
+                  {/* Elephant Water Particles */}
+                  {currentAnimal.id === 'elephant' && (gameState === 'reveal' || gameState === 'success') && (
+                    <motion.svg 
+                      viewBox="0 0 100 100" 
+                      className="absolute -top-10 -right-10 w-24 h-24 pointer-events-none"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1.5 }}
+                    >
+                      {[...Array(5)].map((_, i) => (
+                        <motion.circle 
+                          key={i}
+                          cx="50" cy="50" r="5" 
+                          fill="#60a5fa"
+                          initial={{ x: 0, y: 0 }}
+                          animate={{ 
+                            x: (Math.random() - 0.5) * 100, 
+                            y: -Math.random() * 100,
+                            opacity: [1, 0]
+                          }}
+                          transition={{ duration: 0.8, delay: i * 0.1, repeat: Infinity }}
+                        />
+                      ))}
+                    </motion.svg>
+                  )}
+
+                  {/* Cat Yarn Ball */}
+                  {currentAnimal.id === 'cat' && (gameState === 'reveal' || gameState === 'success') && (
+                    <motion.div
+                       className="absolute -bottom-2 -right-4 text-4xl"
+                       initial={{ x: -50, rotate: 0 }}
+                       animate={{ x: 0, rotate: 360 }}
+                       transition={{ duration: 1, type: 'spring' }}
+                    >
+                      🧶
+                    </motion.div>
+                  )}
                 </motion.div>
-             )}
+
+                {/* Name Reveal */}
+                <AnimatePresence>
+                  {(gameState === 'reveal' || gameState === 'success') && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                      className="absolute bottom-8 bg-white px-6 py-2 rounded-full shadow-lg border-2 border-green-100"
+                    >
+                      <h2 className="text-3xl font-black text-gray-800 tracking-wide">{currentAnimal.name}</h2>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                 {/* Tap Hint Overlay (when hidden) */}
+                 {gameState === 'hidden' && (
+                    <motion.div 
+                      className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-3xl"
+                      initial={{ opacity: 0 }}
+                      whileHover={{ opacity: 1 }}
+                    >
+                      <span className="text-white font-bold text-xl drop-shadow-md">Tap to Reveal!</span>
+                    </motion.div>
+                 )}
+
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* 4. CONTROLS */}
+          <motion.div 
+            layout 
+            className="flex items-center gap-6 mt-4 z-20"
+          >
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: "#fff" }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handlePrevious}
+              className="p-4 rounded-full bg-white/80 shadow-lg text-green-700 hover:text-green-900 transition-colors border-b-4 border-green-200 active:border-b-0 active:translate-y-1"
+            >
+              <ArrowLeft size={24} strokeWidth={3} />
+            </motion.button>
+
+            <motion.button
+              layoutId="play-button"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => play()}
+              className="p-6 rounded-full bg-green-500 shadow-xl text-white border-b-4 border-green-700 active:border-b-0 active:translate-y-1"
+            >
+              <Volume2 size={32} strokeWidth={3} />
+            </motion.button>
+
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: "#fff" }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleNext}
+              className="p-4 rounded-full bg-white/80 shadow-lg text-green-700 hover:text-green-900 transition-colors border-b-4 border-green-200 active:border-b-0 active:translate-y-1"
+            >
+              <ArrowRight size={24} strokeWidth={3} />
+            </motion.button>
           </motion.div>
-        </AnimatePresence>
 
-        {/* Action Area */}
-        <div className="w-full text-center space-y-4 flex flex-col items-center">
-           {gameState === 'hidden' && (
-             <p className="text-xl text-green-800 font-medium select-none">Who is this hiding friend?</p>
-           )}
-           
-           {(gameState === 'reveal' || gameState === 'success') && (
-             <p className="text-xl text-green-800 font-bold animate-pulse select-none">Mimic the sound!</p>
-           )}
+          <motion.p 
+            layout
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 0.6 }}
+            className="text-green-900 font-semibold text-sm bg-white/40 px-4 py-1 rounded-full"
+          >
+            {gameState === 'hidden' ? 'Tap the card to reveal!' : 'Listen & Learn!'}
+          </motion.p>
 
-           <motion.button
-             whileTap={{ scale: 0.95 }}
-             onClick={() => play()}
-             className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg transition-colors mb-6 z-10"
-             aria-label="Play Sound"
-           >
-             <Volume2 size={32} />
-           </motion.button>
-
-           {gameState === 'hidden' && (
-             <motion.button
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               whileTap={{ scale: 0.95 }}
-               onClick={handleReveal}
-               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-8 rounded-full shadow-md transition-colors"
-             >
-               Reveal
-             </motion.button>
-           )}
-
-           {(gameState === 'reveal' || gameState === 'success') && (
-              <p className="text-sm text-green-800/60 font-medium animate-pulse select-none mt-4">Swipe card to next animal</p>
-           )}
-        </div>
-      </motion.div>
+        </motion.div>
+      </LayoutGroup>
     </div>
   );
 };
