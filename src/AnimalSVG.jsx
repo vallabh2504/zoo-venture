@@ -1,310 +1,106 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  HeartHandshake,  // Using a generic icon for some animals, will replace as needed
-  Dog, Cat, Monkey, Penguin, Frog, Shell,  // Shell for Whale placeholder
-  Bird, Bee, Snake,  // Snake, Bee, Frog, Penguin, Cat, Dog are direct
-  Leaf, // for Giraffe (neck/leaf eating)
-  Feather, // For Chicken
-  Droplet, // For Cow (milk)
-  PawPrint, // For Lion, Tiger
-  TreePine, // For Elephant
-  Tent, // For Owl (night/eyes)
-  Fish, // for Penguin (fish icon for its food)
-} from 'lucide-react';
 
-// Custom SVG for Whale (simplified, can be more complex)
-const WhaleSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 11.5a10 10 0 0 1 18 0v.5a3 3 0 0 1-3 3h-2a3 3 0 0 1-3-3v-.5a8 8 0 0 0-10-8Z"/>
-    <path d="M17 14c-.3-.8-.5-1.6-.5-2.5"/>
-    <path d="M16 17a5 5 0 0 1-5 5H6a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h5a5 5 0 0 1 5 5Z"/>
-    <path d="M22 12c0 2.76-3.13 5-7 5s-7-2.24-7-5"/>
-  </svg>
-);
-
-// Custom SVG for Snake (simplified S-curve path)
-const SnakeSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 15c1.5-1.5 3.5-2 5-2 3 0 5 2 8 2s5-2 5-2" />
-    <path d="M20 7c-1.5 1.5-3.5 2-5 2-3 0-5-2-8-2s-5 2-5 2" />
-  </svg>
-);
-
-// Custom SVG for Frog (simplified)
-const FrogSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="14" r="3" />
-    <path d="M9 11l-2-2m6 0l2-2"/>
-    <path d="M9 17l-1 2m6 0l1-2"/>
-    <path d="M5 14h-1a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h1"/>
-    <path d="M19 14h1a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2h-1"/>
-  </svg>
-);
-
-// Custom SVG for Bee (simplified)
-const BeeSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M16 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"/>
-    <path d="M12 2v2m0 16v2"/>
-    <path d="M5 9l-1 1m16-1l1 1"/>
-    <path d="M4 14l1 1m16-1l-1 1"/>
-    <path d="M8 8a6 6 0 0 1 8 0"/>
-    <path d="M8 16a6 6 0 0 0 8 0"/>
-  </svg>
-);
-
-// Custom SVG for Monkey (simplified, for swinging)
-const MonkeySVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M8 12c-2.5 0-4 1-4 3s1.5 3 4 3"/>
-    <path d="M16 12c2.5 0 4 1 4 3s-1.5 3-4 3"/>
-    <path d="M10 14h4"/>
-  </svg>
-);
-
-// Custom SVG for Owl (simplified)
-const OwlSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2L6 8h12z"/>
-    <circle cx="9" cy="13" r="2"/>
-    <circle cx="15" cy="13" r="2"/>
-    <path d="M12 15s-2 2-2 4 2 3 2 3 2-1 2-3-2-4-2-4z"/>
-    <path d="M2 16h20"/>
-  </svg>
-);
-
-// Custom SVG for Chicken (simplified)
-const ChickenSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 12s-1 1-1 3 1 3 1 3h3s1-1 1-3-1-3-1-3z"/>
-    <path d="M18 12s1 1 1 3-1 3-1 3h-3s-1-1-1-3 1-3 1-3z"/>
-    <path d="M12 4v8m-3-4l-1-2m4 2l1-2"/>
-    <path d="M12 16s-2 2-2 4 2 2 2 2 2-2 2-4-2-2-2-2z"/>
-  </svg>
-);
-
-// Custom SVG for Cow (simplified)
-const CowSVG = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeStrokeLinejoin="round">
-    <path d="M10 9l-2-2-2 2"/>
-    <path d="M14 9l2-2 2 2"/>
-    <circle cx="8" cy="12" r="2"/>
-    <circle cx="16" cy="12" r="2"/>
-    <path d="M12 14v4m-2 0h4m-2-4v0a2 2 0 0 0 2 2 2 2 0 0 0 2-2"/>
-    <path d="M12 2L8 5h8z"/>
-  </svg>
-);
-
-
-const AnimalSVG = ({ animalName, isRevealed, discoMode }) => {
-  const commonVariants = {
-    hidden: { opacity: 0, scale: 0.5 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.5 } },
-    disco: {
-      scale: [1, 1.2, 0.8, 1.1, 0.9, 1],
-      rotate: [0, 10, -10, 5, -5, 0],
-      transition: {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const animationProps = (customVariants) => ({
-    variants: { ...commonVariants, ...customVariants },
-    initial: "hidden",
-    animate: isRevealed ? (discoMode ? "disco" : "visible") : "hidden",
-    whileHover: { scale: 1.1, rotate: 5 },
-  });
-
-  const getAnimalComponent = () => {
-    switch (animalName) {
-      case 'Lion':
-      case 'Tiger':
+const AnimalSVG = ({ animal, isCollected }) => {
+  // Simple SVG mapping based on animal type
+  // In a real app, these would be separate SVG files or more complex paths
+  const getAnimalPath = (type) => {
+    switch (type?.toLowerCase()) {
+      case 'lion':
         return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, y: [0, -10, 0], transition: { duration: 0.8, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <PawPrint size={64} />
-          </motion.div>
+          <g>
+            <circle cx="50" cy="50" r="40" fill="#F4C430" />
+            <circle cx="35" cy="40" r="5" fill="#000" />
+            <circle cx="65" cy="40" r="5" fill="#000" />
+            <path d="M 40 70 Q 50 80 60 70" stroke="#000" strokeWidth="3" fill="none" />
+            <path d="M 20 20 L 30 10 L 40 20 L 50 10 L 60 20 L 70 10 L 80 20" stroke="#D2691E" strokeWidth="5" fill="none" />
+          </g>
         );
-      case 'Elephant':
+      case 'elephant':
         return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, x: [0, 5, -5, 0], transition: { duration: 1, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <TreePine size={64} /> {/* Placeholder for elephant head/trunk */}
-          </motion.div>
+          <g>
+            <rect x="20" y="30" width="60" height="50" rx="10" fill="#A9A9A9" />
+            <circle cx="35" cy="45" r="3" fill="#000" />
+            <circle cx="65" cy="45" r="3" fill="#000" />
+            <path d="M 50 50 L 50 80 L 40 90" stroke="#A9A9A9" strokeWidth="8" fill="none" />
+            <path d="M 10 30 Q 0 40 10 50" fill="#A9A9A9" />
+            <path d="M 90 30 Q 100 40 90 50" fill="#A9A9A9" />
+          </g>
         );
-      case 'Giraffe':
+      case 'monkey':
         return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, y: [0, -15, 0], transition: { duration: 1.2, repeat: Infinity, repeatType: "reverse", ease: "easeOut" } }
-          })}>
-            <Leaf size={64} /> {/* Placeholder for giraffe neck */}
-          </motion.div>
+          <g>
+            <circle cx="50" cy="50" r="35" fill="#8B4513" />
+            <circle cx="40" cy="45" r="4" fill="#000" />
+            <circle cx="60" cy="45" r="4" fill="#000" />
+            <ellipse cx="50" cy="65" rx="10" ry="5" fill="#DEB887" />
+            <circle cx="15" cy="50" r="10" fill="#8B4513" />
+            <circle cx="85" cy="50" r="10" fill="#8B4513" />
+          </g>
         );
-      case 'Dog':
+      case 'penguin':
         return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, rotate: [0, 5, -5, 0], transition: { duration: 0.7, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <Dog size={64} />
-          </motion.div>
-        );
-      case 'Cat':
-        return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, x: [0, 3, -3, 0], transition: { duration: 0.6, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <Cat size={64} />
-          </motion.div>
-        );
-      case 'Monkey':
-        // Swinging animation
-        return (
-          <motion.div
-            {...animationProps({
-              visible: {
-                ...commonVariants.visible,
-                rotate: [0, 20, -20, 0],
-                x: [0, 10, -10, 0],
-                y: [0, -5, 5, 0],
-                transition: {
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  ease: "easeInOut"
-                }
-              }
-            })}
-            style={{ originY: 0 }} // Swing from the top
-          >
-            <MonkeySVG size={64} />
-          </motion.div>
-        );
-      case 'Penguin':
-        return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, y: [0, -5, 0], rotate: [0, 2, -2, 0], transition: { duration: 0.9, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <Penguin size={64} />
-          </motion.div>
-        );
-      case 'Frog':
-        // Jump/Leap animation
-        return (
-          <motion.div {...animationProps({
-            visible: {
-              ...commonVariants.visible,
-              y: [0, -40, 0], // Jump up
-              scaleY: [1, 0.8, 1.2, 1], // Squish and stretch
-              transition: {
-                duration: 1,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeOut"
-              }
-            }
-          })}>
-            <FrogSVG size={64} />
-          </motion.div>
-        );
-      case 'Owl':
-        return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, rotate: [0, -5, 5, 0], transition: { duration: 1.5, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <OwlSVG size={64} />
-          </motion.div>
-        );
-      case 'Bee':
-        // Vibration/Flight path
-        return (
-          <motion.div {...animationProps({
-            visible: {
-              ...commonVariants.visible,
-              x: [0, 10, -10, 5, -5, 0],
-              y: [0, -5, 5, -3, 3, 0],
-              rotate: [0, 5, -5, 3, -3, 0],
-              transition: {
-                duration: 1,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }
-            }
-          })}>
-            <BeeSVG size={64} />
-          </motion.div>
-        );
-      case 'Snake':
-        // Realistic slither path (S-curve)
-        return (
-          <motion.div {...animationProps({
-            visible: {
-              ...commonVariants.visible,
-              x: [0, 10, -10, 0],
-              rotate: [0, 10, -10, 0],
-              transition: {
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }
-            }
-          })}>
-            <SnakeSVG size={64} />
-          </motion.div>
-        );
-      case 'Whale':
-        // Floating/swimming motion
-        return (
-          <motion.div {...animationProps({
-            visible: {
-              ...commonVariants.visible,
-              y: [0, -10, 0],
-              rotate: [0, 2, -2, 0],
-              transition: {
-                duration: 3,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut"
-              }
-            }
-          })}>
-            <WhaleSVG size={64} />
-          </motion.div>
-        );
-      case 'Chicken':
-        return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, y: [0, -8, 0], rotate: [0, 3, -3, 0], transition: { duration: 0.7, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <ChickenSVG size={64} />
-          </motion.div>
-        );
-      case 'Cow':
-        return (
-          <motion.div {...animationProps({
-            visible: { ...commonVariants.visible, rotate: [0, -2, 2, 0], transition: { duration: 1.8, repeat: Infinity, repeatType: "reverse" } }
-          })}>
-            <CowSVG size={64} />
-          </motion.div>
+          <g>
+             <ellipse cx="50" cy="50" rx="30" ry="40" fill="#000" />
+             <ellipse cx="50" cy="55" rx="20" ry="30" fill="#FFF" />
+             <circle cx="45" cy="40" r="3" fill="#000" />
+             <circle cx="55" cy="40" r="3" fill="#000" />
+             <path d="M 45 50 L 50 55 L 55 50" fill="#FFA500" />
+          </g>
         );
       default:
+        // Generic paw print for unknown animals
         return (
-          <motion.div {...animationProps()}>
-            <HeartHandshake size={64} /> {/* Default fallback icon */}
-          </motion.div>
+          <g>
+            <circle cx="30" cy="40" r="10" fill="#555" />
+            <circle cx="50" cy="30" r="10" fill="#555" />
+            <circle cx="70" cy="40" r="10" fill="#555" />
+            <ellipse cx="50" cy="70" rx="25" ry="20" fill="#555" />
+          </g>
         );
     }
   };
 
-  return getAnimalComponent();
+  // Animation variants
+  const variants = {
+    hidden: { scale: 0.8, opacity: 0.5 },
+    visible: { 
+      scale: 1, 
+      opacity: 1,
+      transition: { 
+        type: "spring",
+        stiffness: 260,
+        damping: 20 
+      } 
+    },
+    hover: { 
+      scale: 1.1,
+      rotate: [0, -5, 5, 0],
+      transition: { duration: 0.3 }
+    }
+  };
+
+  return (
+    <motion.div
+      className={`animal-svg-container ${isCollected ? 'collected' : 'uncollected'}`}
+      initial="hidden"
+      animate="visible"
+      whileHover={isCollected ? "hover" : ""}
+      variants={variants}
+      style={{
+        width: '100px',
+        height: '100px',
+        filter: isCollected ? 'none' : 'grayscale(100%) brightness(0.6) contrast(1.2)',
+        opacity: isCollected ? 1 : 0.7,
+        cursor: isCollected ? 'pointer' : 'default',
+        display: 'inline-block'
+      }}
+    >
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        {getAnimalPath(animal?.type || animal?.name)}
+      </svg>
+    </motion.div>
+  );
 };
 
 export default AnimalSVG;

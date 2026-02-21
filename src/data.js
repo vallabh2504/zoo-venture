@@ -1,107 +1,107 @@
 export const animals = [
   {
     id: 1,
-    name: 'Lion',
-    emoji: '🦁',
-    sound: '/sounds/lion.mp3',
-    description: 'The king of the jungle, known for its majestic roar.'
+    name: "Lion",
+    svg: "🦁",
+    fact: "Lions are the only cats that live in groups called prides.",
+    color: "#FFD700"
   },
   {
     id: 2,
-    name: 'Elephant',
-    emoji: '🐘',
-    sound: '/sounds/elephant.mp3',
-    description: 'The largest land animal, with a long trunk and large ears.'
+    name: "Elephant",
+    svg: "🐘",
+    fact: "Elephants are the world's largest land animal.",
+    color: "#808080"
   },
   {
     id: 3,
-    name: 'Giraffe',
-    emoji: '🦒',
-    sound: '/sounds/giraffe.mp3',
-    description: 'The tallest mammal in the world, famous for its long neck.'
+    name: "Giraffe",
+    svg: "🦒",
+    fact: "Giraffes have blue tongues that can be 20 inches long!",
+    color: "#FFA500"
   },
   {
     id: 4,
-    name: 'Dog',
-    emoji: '🐕',
-    sound: '/sounds/dog.mp3',
-    description: 'A domesticated carnivorous mammal, known as "man\'s best friend".'
+    name: "Zebra",
+    svg: "🦓",
+    fact: "Every zebra has a unique pattern of black and white stripes.",
+    color: "#FFFFFF"
   },
   {
     id: 5,
-    name: 'Cat',
-    emoji: '🐈',
-    sound: '/sounds/cat.mp3',
-    description: 'A small domesticated carnivorous mammal with soft fur.'
+    name: "Monkey",
+    svg: "🐒",
+    fact: "Monkeys use their tails for balance and climbing.",
+    color: "#8B4513"
   },
   {
     id: 6,
-    name: 'Monkey',
-    emoji: '🐒',
-    sound: '/sounds/monkey.mp3',
-    description: 'A playful and intelligent primate, often found in jungles.'
+    name: "Tiger",
+    svg: "🐅",
+    fact: "A tiger's roar can be heard as far as two miles away.",
+    color: "#FF8C00"
   },
   {
     id: 7,
-    name: 'Tiger',
-    emoji: '🐅',
-    sound: '/sounds/tiger.mp3',
-    description: 'The largest cat species, recognized by its dark vertical stripes.'
+    name: "Penguin",
+    svg: "🐧",
+    fact: "Penguins are birds that cannot fly, but they are excellent swimmers.",
+    color: "#000000"
   },
   {
     id: 8,
-    name: 'Penguin',
-    emoji: '🐧',
-    sound: '/sounds/penguin.mp3',
-    description: 'A flightless bird that lives in cold southern regions.'
+    name: "Kangaroo",
+    svg: "🦘",
+    fact: "Kangaroos cannot walk backwards.",
+    color: "#C19A6B"
   },
   {
     id: 9,
-    name: 'Frog',
-    emoji: '🐸',
-    sound: '/sounds/frog.mp3',
-    description: 'A small amphibian known for its croaking sound and jumping.'
+    name: "Panda",
+    svg: "🐼",
+    fact: "Giant pandas spend about 12 hours a day eating bamboo.",
+    color: "#F0F0F0"
   },
   {
     id: 10,
-    name: 'Owl',
-    emoji: '🦉',
-    sound: '/sounds/owl.mp3',
-    description: 'A nocturnal bird of prey with large eyes and a piercing hoot.'
+    name: "Koala",
+    svg: "🐨",
+    fact: "Koalas have fingerprints that are very similar to humans.",
+    color: "#708090"
   },
   {
     id: 11,
-    name: 'Bee',
-    emoji: '🐝',
-    sound: '/sounds/bee.mp3',
-    description: 'A flying insect known for producing honey and pollinating flowers.'
+    name: "Hippo",
+    svg: "🦛",
+    fact: "Hippos love water and can hold their breath for up to 5 minutes.",
+    color: "#4682B4"
   },
   {
     id: 12,
-    name: 'Snake',
-    emoji: '🐍',
-    sound: '/sounds/snake.mp3',
-    description: 'A long, legless reptile that slithers on the ground.'
+    name: "Rhino",
+    svg: "🦏",
+    fact: "Rhino horns are made of keratin, the same stuff as fingernails.",
+    color: "#A9A9A9"
   },
   {
     id: 13,
-    name: 'Whale',
-    emoji: '🐳',
-    sound: '/sounds/whale.mp3',
-    description: 'A very large marine mammal with a streamlined hairless body.'
+    name: "Crocodile",
+    svg: "🐊",
+    fact: "Crocodiles have the strongest bite of any animal in the world.",
+    color: "#228B22"
   },
   {
     id: 14,
-    name: 'Chicken',
-    emoji: '🐔',
-    sound: '/sounds/chicken.mp3',
-    description: 'A domestic fowl kept for its eggs or meat.'
+    name: "Snake",
+    svg: "🐍",
+    fact: "Snakes smell with their tongues.",
+    color: "#32CD32"
   },
   {
     id: 15,
-    name: 'Cow',
-    emoji: '🐄',
-    sound: '/sounds/cow.mp3',
-    description: 'A large domesticated bovine animal kept for milk or meat.'
+    name: "Parrot",
+    svg: "🦜",
+    fact: "Some parrots can live for over 80 years.",
+    color: "#FF0000"
   }
 ];
