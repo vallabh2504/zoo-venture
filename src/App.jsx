@@ -83,7 +83,7 @@ const App = () => {
                   {animals.filter(a => collectedAnimals.includes(a.id)).map(animal => (
                     <div key={animal.id} className="flex flex-col items-center bg-green-50 p-4 rounded-lg shadow-sm border border-green-100">
                       <div className="w-24 h-24 mb-2">
-                        <AnimalSVG type={animal.type} />
+                        <AnimalSVG animal={animal} isCollected={true} />
                       </div>
                       <span className="font-bold text-lg capitalize">{animal.name}</span>
                       <span className="text-xs text-green-600 bg-green-200 px-2 py-1 rounded-full mt-1">{animal.rarity || 'Common'}</span>
@@ -114,7 +114,7 @@ const App = () => {
                   onClick={() => handleCollect(currentAnimal.id)}
                 >
                   <div className="w-48 h-48 md:w-64 md:h-64">
-                    <AnimalSVG type={currentAnimal.type} />
+                    <AnimalSVG key={currentAnimal.id} animal={currentAnimal} isCollected={true} />
                   </div>
                   
                   {!collectedAnimals.includes(currentAnimal.id) && (

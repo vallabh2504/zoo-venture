@@ -48,8 +48,118 @@ const AnimalSVG = ({ animal, isCollected }) => {
              <path d="M 45 50 L 50 55 L 55 50" fill="#FFA500" />
           </g>
         );
+      case 'giraffe':
+        return (
+          <g>
+            <rect x="40" y="10" width="20" height="70" fill={animal?.color || '#FFD700'} />
+            <circle cx="45" cy="30" r="4" fill="#8B4513" />
+            <circle cx="55" cy="50" r="4" fill="#8B4513" />
+            <circle cx="45" cy="70" r="4" fill="#8B4513" />
+            <circle cx="50" cy="80" r="15" fill={animal?.color || '#FFD700'} />
+          </g>
+        );
+      case 'zebra':
+        return (
+          <g>
+            <rect x="20" y="20" width="60" height="60" rx="10" fill={animal?.color || '#FFF'} />
+            <rect x="20" y="20" width="10" height="60" fill="#000" />
+            <rect x="40" y="20" width="10" height="60" fill="#000" />
+            <rect x="60" y="20" width="10" height="60" fill="#000" />
+          </g>
+        );
+      case 'tiger':
+        return (
+          <g>
+            <circle cx="50" cy="50" r="40" fill={animal?.color || '#FFA500'} />
+            <path d="M 30 20 L 40 10 L 50 20 L 60 10 L 70 20" stroke="#000" strokeWidth="3" />
+            <path d="M 25 40 L 35 30 L 45 40" stroke="#000" strokeWidth="3" />
+            <path d="M 55 40 L 65 30 L 75 40" stroke="#000" strokeWidth="3" />
+            <path d="M 30 70 Q 50 85 70 70" stroke="#000" strokeWidth="3" fill="none" />
+          </g>
+        );
+      case 'kangaroo':
+        return (
+          <g>
+            <ellipse cx="50" cy="60" rx="25" ry="35" fill={animal?.color || '#8B4513'} />
+            <circle cx="50" cy="30" r="20" fill={animal?.color || '#8B4513'} />
+            <circle cx="45" cy="25" r="3" fill="#000" />
+            <circle cx="55" cy="25" r="3" fill="#000" />
+            <ellipse cx="50" cy="40" rx="8" ry="4" fill="#DEB887" />
+          </g>
+        );
+      case 'panda':
+        return (
+          <g>
+            <circle cx="50" cy="50" r="40" fill={animal?.color || '#FFF'} />
+            <circle cx="30" cy="30" r="15" fill="#000" />
+            <circle cx="70" cy="30" r="15" fill="#000" />
+            <circle cx="35" cy="40" r="5" fill="#FFF" />
+            <circle cx="65" cy="40" r="5" fill="#FFF" />
+            <path d="M 40 65 Q 50 75 60 65" stroke="#000" strokeWidth="3" fill="none" />
+          </g>
+        );
+      case 'koala':
+        return (
+          <g>
+            <ellipse cx="50" cy="55" rx="30" ry="35" fill={animal?.color || '#B0C4DE'} />
+            <circle cx="30" cy="30" r="15" fill={animal?.color || '#B0C4DE'} />
+            <circle cx="70" cy="30" r="15" fill={animal?.color || '#B0C4DE'} />
+            <circle cx="45" cy="50" r="4" fill="#000" />
+            <circle cx="55" cy="50" r="4" fill="#000" />
+            <ellipse cx="50" cy="65" rx="8" ry="5" fill="#36454F" />
+          </g>
+        );
+      case 'hippo':
+        return (
+          <g>
+            <rect x="20" y="40" width="60" height="30" rx="15" fill={animal?.color || '#778899'} />
+            <ellipse cx="50" cy="35" rx="30" ry="20" fill={animal?.color || '#778899'} />
+            <circle cx="35" cy="30" r="3" fill="#000" />
+            <circle cx="65" cy="30" r="3" fill="#000" />
+            <path d="M 40 70 L 40 80 L 60 80 L 60 70" fill={animal?.color || '#778899'} />
+          </g>
+        );
+      case 'rhino':
+        return (
+          <g>
+            <rect x="20" y="40" width="60" height="30" rx="10" fill={animal?.color || '#808080'} />
+            <path d="M 40 40 L 50 20 L 60 40 Z" fill="#555" />
+            <circle cx="35" cy="50" r="3" fill="#000" />
+            <circle cx="65" cy="50" r="3" fill="#000" />
+            <path d="M 20 50 Q 10 60 20 70" fill={animal?.color || '#808080'} />
+          </g>
+        );
+      case 'crocodile':
+        return (
+          <g>
+            <rect x="10" y="40" width="80" height="20" rx="5" fill={animal?.color || '#228B22'} />
+            <path d="M 10 40 L 0 35 L 10 30 L 20 35 L 30 30 L 40 35 L 50 30 L 60 35 L 70 30 L 80 35 L 90 30 L 80 40 Z" fill="#228B22" />
+            <circle cx="15" cy="45" r="2" fill="#000" />
+            <circle cx="25" cy="45" r="2" fill="#000" />
+          </g>
+        );
+      case 'snake':
+        return (
+          <g>
+            <path d="M 20 80 Q 50 20 80 80" stroke={animal?.color || '#32CD32'} strokeWidth="10" fill="none" />
+            <circle cx="80" cy="80" r="5" fill="#32CD32" />
+            <circle cx="78" cy="78" r="1" fill="#000" />
+            <circle cx="82" cy="78" r="1" fill="#000" />
+          </g>
+        );
+      case 'parrot':
+        return (
+          <g>
+            <circle cx="50" cy="40" r="25" fill={animal?.color || '#FF4500'} />
+            <polygon points="50,65 30,80 70,80" fill="#32CD32" />
+            <circle cx="45" cy="35" r="3" fill="#000" />
+            <circle cx="55" cy="35" r="3" fill="#000" />
+            <path d="M 50 45 L 50 50 L 55 47 Z" fill="#FFA500" />
+          </g>
+        );
       default:
         // Generic paw print for unknown animals
+        console.warn("AnimalSVG: Fallback triggered for", animal);
         return (
           <g>
             <circle cx="30" cy="40" r="10" fill="#555" />
