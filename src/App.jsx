@@ -9,6 +9,7 @@ const App = () => {
   const [showTrophyRoom, setShowTrophyRoom] = useState(false);
   const [currentAnimal, setCurrentAnimal] = useState(null);
   const [celebrating, setCelebrating] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false); // New state for audio unlock
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
@@ -34,10 +35,6 @@ const App = () => {
     success.volume = 0.5;
     successSound.current = success;
 
-    // Optional: Preload generic pop for fallbacks if needed, 
-    // but the pool is already keyed by ID.
-
-    // Cleanup not strictly necessary for single-page app but good practice
     return () => {
       Object.values(audioPool.current).forEach(audio => {
         audio.pause();
@@ -77,7 +74,6 @@ const App = () => {
     if (uncollected.length > 0) {
       return uncollected[Math.floor(Math.random() * uncollected.length)];
     }
-    // If all collected, show any
     return animals[Math.floor(Math.random() * animals.length)];
   }, [collectedAnimals]);
 
@@ -86,6 +82,25 @@ const App = () => {
       setCurrentAnimal(getWildAnimal());
     }
   }, [currentAnimal, getWildAnimal]);
+
+  const handleStart = () => {
+    // Unlock AudioContext by playing a silent sound or resuming
+    if (successSound.current) {
+      successSound.current.volume = 0;
+      successSound.current.play().then(() => {
+        successSound.current.pause();
+        successSound.current.currentTime = 0;
+        successSound.current.volume = 0.5;
+      }).catch(e => console.warn("Audio unlock failed:", e));
+    }
+    
+    // Also "warm up" other sounds if needed
+    Object.values(audioPool.current).forEach(audio => {
+        audio.load();
+    });
+
+    setHasStarted(true);
+  };
 
   const handleCollect = (id) => {
     if (celebrating) return;
@@ -119,6 +134,36 @@ const App = () => {
 
   return (
     <div className="fixed inset-0 bg-[#f0f9ff] font-sans text-slate-800 overflow-hidden flex flex-col">
+      {/* Start Overlay */}
+      <AnimatePresence>
+        {!hasStarted && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-emerald-500 flex flex-col items-center justify-center p-6 text-center"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full"
+            >
+              <div className="text-6xl mb-6">🦁</div>
+              <h1 className="text-3xl font-black text-slate-900 mb-4">Welcome to Zoo Venture!</h1>
+              <p className="text-slate-600 mb-8 font-medium">
+                We need your help to find all the animals! Turn on your sound for the best experience.
+              </p>
+              <button
+                onClick={handleStart}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-black py-4 px-8 rounded-2xl text-xl shadow-lg shadow-emerald-200 transition-all"
+              >
+                START ADVENTURE 🚀
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {celebrating && (
         <Confetti
           width={windowSize.width}
@@ -154,6 +199,7 @@ const App = () => {
               exit={{ opacity: 0, y: 20 }}
               className="absolute inset-0 p-4 md:p-8 overflow-y-auto"
             >
+              {/* Trophy Room Content */}
               <div className="max-w-5xl mx-auto">
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
                   <div>
