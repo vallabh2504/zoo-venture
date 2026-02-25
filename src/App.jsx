@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
+import useSound from 'use-sound';
 import { animals } from './data';
 import AnimalSVG from './AnimalSVG';
 
@@ -13,6 +14,18 @@ const App = () => {
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  // Sound management
+  const [soundToPlay, setSoundToPlay] = useState(null);
+  
+  // Create an object to hold play functions for all animals
+  const animalSounds = {};
+  animals.forEach(animal => {
+    const [play] = useSound(animal.sound, { volume: 0.7 });
+    animalSounds[animal.id] = play;
+  });
+
+  const [playCollect] = useSound('/sounds/success.mp3', { volume: 0.5 }); // Optional generic success sound
 
   // Handle window resize for confetti
   useEffect(() => {
@@ -61,7 +74,11 @@ const App = () => {
 
     setCelebrating(true);
     
-    // Play a "success" sound or just trigger animation
+    // Play animal sound immediately
+    if (animalSounds[id]) {
+      animalSounds[id]();
+    }
+    
     setTimeout(() => {
       setCelebrating(false);
       setCurrentAnimal(getWildAnimal());
