@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Confetti from 'react-confetti';
-import useSound from 'use-sound';
 import { animals } from './data';
 import AnimalSVG from './AnimalSVG';
 
@@ -15,17 +14,41 @@ const App = () => {
     height: window.innerHeight,
   });
 
-  // Sound management
-  const [soundToPlay, setSoundToPlay] = useState(null);
-  
-  // Create an object to hold play functions for all animals
-  const animalSounds = {};
-  animals.forEach(animal => {
-    const [play] = useSound(animal.sound, { volume: 0.7 });
-    animalSounds[animal.id] = play;
-  });
+  // Sound management: Persistent audio pool
+  const audioPool = useRef({});
+  const successSound = useRef(null);
 
-  const [playCollect] = useSound('/sounds/success.mp3', { volume: 0.5 }); // Optional generic success sound
+  // Initialize Audio objects once on mount
+  useEffect(() => {
+    // Initialize animal sounds
+    animals.forEach(animal => {
+      const audio = new Audio(animal.sound);
+      audio.preload = 'auto';
+      audio.volume = 0.7;
+      audioPool.current[animal.id] = audio;
+    });
+
+    // Initialize success sound
+    const success = new Audio('/sounds/success.mp3');
+    success.preload = 'auto';
+    success.volume = 0.5;
+    successSound.current = success;
+
+    // Optional: Preload generic pop for fallbacks if needed, 
+    // but the pool is already keyed by ID.
+
+    // Cleanup not strictly necessary for single-page app but good practice
+    return () => {
+      Object.values(audioPool.current).forEach(audio => {
+        audio.pause();
+        audio.src = '';
+      });
+      if (successSound.current) {
+        successSound.current.pause();
+        successSound.current.src = '';
+      }
+    };
+  }, []);
 
   // Handle window resize for confetti
   useEffect(() => {
@@ -64,34 +87,29 @@ const App = () => {
     }
   }, [currentAnimal, getWildAnimal]);
 
-  // Preload sounds for better performance
-  useEffect(() => {
-    animals.forEach(animal => {
-      const audio = new Audio(animal.sound);
-      audio.preload = 'auto';
-    });
-  }, []);
-
   const handleCollect = (id) => {
     if (celebrating) return;
 
-    const animal = animals.find(a => a.id === id);
-    if (animal && animal.sound) {
-      const audio = new Audio(animal.sound);
-      audio.play().catch(e => console.error("Audio playback failed:", e));
+    // Play animal sound immediately from pool
+    const audio = audioPool.current[id];
+    if (audio) {
+      audio.currentTime = 0;
+      audio.play().catch(e => console.warn("Audio play failed:", e));
     }
 
+    // Play success sound
+    if (successSound.current) {
+      successSound.current.currentTime = 0;
+      successSound.current.play().catch(e => console.warn("Success sound failed:", e));
+    }
+
+    const animal = animals.find(a => a.id === id);
     const isNew = !collectedAnimals.includes(id);
     if (isNew) {
       setCollectedAnimals(prev => [...prev, id]);
     }
 
     setCelebrating(true);
-    
-    // Play animal sound immediately
-    if (animalSounds[id]) {
-      animalSounds[id]();
-    }
     
     setTimeout(() => {
       setCelebrating(false);
