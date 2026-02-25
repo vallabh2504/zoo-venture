@@ -2,106 +2,91 @@ export const animals = [
   {
     id: 1,
     name: "Lion",
-    svg: "🦁",
     fact: "Lions are the only cats that live in groups called prides.",
     color: "#FFD700"
   },
   {
     id: 2,
     name: "Elephant",
-    svg: "🐘",
     fact: "Elephants are the world's largest land animal.",
     color: "#808080"
   },
   {
     id: 3,
     name: "Giraffe",
-    svg: "🦒",
     fact: "Giraffes have blue tongues that can be 20 inches long!",
     color: "#FFA500"
   },
   {
     id: 4,
-    name: "Zebra",
-    svg: "🦓",
-    fact: "Every zebra has a unique pattern of black and white stripes.",
-    color: "#FFFFFF"
+    name: "Dog",
+    fact: "Dogs have an extraordinary sense of smell.",
+    color: "#8B4513"
   },
   {
     id: 5,
+    name: "Cat",
+    fact: "Cats can jump up to six times their height.",
+    color: "#808080"
+  },
+  {
+    id: 6,
     name: "Monkey",
-    svg: "🐒",
     fact: "Monkeys use their tails for balance and climbing.",
     color: "#8B4513"
   },
   {
-    id: 6,
+    id: 7,
     name: "Tiger",
-    svg: "🐅",
     fact: "A tiger's roar can be heard as far as two miles away.",
     color: "#FF8C00"
   },
   {
-    id: 7,
+    id: 8,
     name: "Penguin",
-    svg: "🐧",
     fact: "Penguins are birds that cannot fly, but they are excellent swimmers.",
     color: "#000000"
   },
   {
-    id: 8,
-    name: "Kangaroo",
-    svg: "🦘",
-    fact: "Kangaroos cannot walk backwards.",
-    color: "#C19A6B"
-  },
-  {
     id: 9,
-    name: "Panda",
-    svg: "🐼",
-    fact: "Giant pandas spend about 12 hours a day eating bamboo.",
-    color: "#F0F0F0"
+    name: "Frog",
+    fact: "Frogs absorb water through their skin so they don't need to drink.",
+    color: "#32CD32"
   },
   {
     id: 10,
-    name: "Koala",
-    svg: "🐨",
-    fact: "Koalas have fingerprints that are very similar to humans.",
-    color: "#708090"
+    name: "Owl",
+    fact: "Owls can rotate their heads up to 270 degrees.",
+    color: "#8B4513"
   },
   {
     id: 11,
-    name: "Hippo",
-    svg: "🦛",
-    fact: "Hippos love water and can hold their breath for up to 5 minutes.",
-    color: "#4682B4"
+    name: "Bee",
+    fact: "Bees communicate by performing a 'waggle dance'.",
+    color: "#FFD700"
   },
   {
     id: 12,
-    name: "Rhino",
-    svg: "🦏",
-    fact: "Rhino horns are made of keratin, the same stuff as fingernails.",
-    color: "#A9A9A9"
-  },
-  {
-    id: 13,
-    name: "Crocodile",
-    svg: "🐊",
-    fact: "Crocodiles have the strongest bite of any animal in the world.",
-    color: "#228B22"
-  },
-  {
-    id: 14,
     name: "Snake",
-    svg: "🐍",
     fact: "Snakes smell with their tongues.",
     color: "#32CD32"
   },
   {
+    id: 13,
+    name: "Whale",
+    fact: "Blue whales are the largest animals ever known to have lived on Earth.",
+    color: "#1E90FF"
+  },
+  {
+    id: 14,
+    name: "Chicken",
+    fact: "Chickens have more than 30 different vocalizations.",
+    color: "#FFFFFF"
+  },
+  {
     id: 15,
-    name: "Parrot",
-    svg: "🦜",
-    fact: "Some parrots can live for over 80 years.",
-    color: "#FF0000"
+    name: "Cow",
+    fact: "Cows have an almost 360-degree panoramic vision.",
+    color: "#FFFFFF"
   }
 ];
