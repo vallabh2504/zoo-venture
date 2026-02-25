@@ -64,8 +64,22 @@ const App = () => {
     }
   }, [currentAnimal, getWildAnimal]);
 
+  // Preload sounds for better performance
+  useEffect(() => {
+    animals.forEach(animal => {
+      const audio = new Audio(animal.sound);
+      audio.preload = 'auto';
+    });
+  }, []);
+
   const handleCollect = (id) => {
     if (celebrating) return;
+
+    const animal = animals.find(a => a.id === id);
+    if (animal && animal.sound) {
+      const audio = new Audio(animal.sound);
+      audio.play().catch(e => console.error("Audio playback failed:", e));
+    }
 
     const isNew = !collectedAnimals.includes(id);
     if (isNew) {
