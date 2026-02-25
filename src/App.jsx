@@ -15,6 +15,9 @@ const App = () => {
     height: window.innerHeight,
   });
 
+  // Anti-spam ref
+  const isProcessingRef = useRef(false);
+
   // Sound management: Persistent audio pool
   const audioPool = useRef({});
   const successSound = useRef(null);
@@ -103,7 +106,8 @@ const App = () => {
   };
 
   const handleCollect = (id) => {
-    if (celebrating) return;
+    if (celebrating || isProcessingRef.current) return;
+    isProcessingRef.current = true;
 
     // Play animal sound immediately from pool
     const audio = audioPool.current[id];
@@ -129,6 +133,7 @@ const App = () => {
     setTimeout(() => {
       setCelebrating(false);
       setCurrentAnimal(getWildAnimal());
+      isProcessingRef.current = false;
     }, 3000);
   };
 
